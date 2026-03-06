@@ -377,39 +377,60 @@
     // ════════════════════════════════════════════════════════════
     //  GESTION DU TOKEN (Implicit Grant)
     // ════════════════════════════════════════════════════════════
-    const TOKEN_KEY = 'twitch_access_token';
+    const TOKEN_KEY     = 'twitch_access_token';
+    const TOKEN_EXP_KEY = 'twitch_token_expiry';
 
     function getStoredToken() {
-        return sessionStorage.getItem(TOKEN_KEY);
+        const token  = localStorage.getItem(TOKEN_KEY);
+        const expiry = localStorage.getItem(TOKEN_EXP_KEY);
+        if (!token) return null;
+        // Vérifier expiration (tokens Twitch durent ~4h)
+        if (expiry && Date.now() > parseInt(expiry)) {
+            clearToken();
+            return null;
+        }
+        return token;
     }
 
     function storeToken(token) {
-        sessionStorage.setItem(TOKEN_KEY, token);
+        localStorage.setItem(TOKEN_KEY, token);
+        // Expiration dans 3h50 (marge de sécurité)
+        localStorage.setItem(TOKEN_EXP_KEY, Date.now() + 13800000);
     }
 
     function clearToken() {
-        sessionStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(TOKEN_EXP_KEY);
     }
 
-    // Lire le token dans le fragment d'URL après redirection Twitch
-    function parseTokenFromHash() {
+    // Lire le token depuis :
+    //   1. Le fragment d'URL après redirection Twitch  (#access_token=xxx)
+    //   2. Un paramètre query ?token=xxx  (pour OBS)
+    function parseTokenFromURL() {
+        // Fragment (retour OAuth)
         const hash = window.location.hash.substring(1);
-        const params = new URLSearchParams(hash);
-        return params.get('access_token') || null;
+        const hashParams = new URLSearchParams(hash);
+        if (hashParams.get('access_token')) return hashParams.get('access_token');
+
+        // Query param ?token=xxx (usage OBS)
+        const queryParams = new URLSearchParams(window.location.search);
+        if (queryParams.get('token')) return queryParams.get('token');
+
+        return null;
     }
 
     // Rediriger vers Twitch pour l'auth
     function redirectToTwitchAuth() {
-        const state = Math.random().toString(36).substring(2); // anti-CSRF
-        sessionStorage.setItem('oauth_state', state);
+        const state = Math.random().toString(36).substring(2);
+        localStorage.setItem('oauth_state', state);
 
         const url = new URL('https://id.twitch.tv/oauth2/authorize');
         url.searchParams.set('client_id',     CONFIG.CLIENT_ID);
         url.searchParams.set('redirect_uri',  CONFIG.REDIRECT_URI);
-        url.searchParams.set('response_type', 'token');  // Implicit Grant
+        url.searchParams.set('response_type', 'token');
         url.searchParams.set('scope',         CONFIG.SCOPES);
         url.searchParams.set('state',         state);
-        url.searchParams.set('force_verify',  'false');   // true = toujours demander le consentement
+        url.searchParams.set('force_verify',  'false');
 
         window.location.href = url.toString();
     }
@@ -530,12 +551,16 @@
     }
 
     async function init() {
-        // 1. Vérifier si Twitch a renvoyé un token dans l'URL
-        const hashToken = parseTokenFromHash();
-        if (hashToken) {
-            storeToken(hashToken);
-            // Nettoyer l'URL (enlever le fragment avec le token)
-            history.replaceState(null, '', window.location.pathname + window.location.search);
+        // 1. Récupérer le token depuis l'URL (retour OAuth ou paramètre ?token=)
+        const urlToken = parseTokenFromURL();
+        if (urlToken) {
+            storeToken(urlToken);
+            // Nettoyer l'URL du token visible
+            history.replaceState(null, '', window.location.pathname);
+
+            // Afficher l'URL OBS à copier (avec ?token=)
+            showOBSHelper(urlToken);
+            return;
         }
 
         const token = getStoredToken();
@@ -563,6 +588,49 @@
 
         await refresh();
         setInterval(refresh, CONFIG.REFRESH_INTERVAL);
+    }
+
+    // Affiche un écran intermédiaire avec l'URL à coller dans OBS
+    function showOBSHelper(token) {
+        const obsURL = `${window.location.origin}${window.location.pathname}?token=${token}`;
+
+        document.getElementById('auth-screen').innerHTML = `
+            <h2>✦ Connexion réussie ✦</h2>
+            <p>Copie cette URL et colle-la dans ta <strong style="color:#f5c842">Source Navigateur OBS</strong>.<br>
+            Elle contient ton token et chargera le widget directement.</p>
+            <div id="obs-url-box" style="
+                background:rgba(0,0,0,.4);
+                border:1px solid rgba(245,200,66,.3);
+                border-radius:4px;
+                padding:10px 14px;
+                font-size:10px;
+                color:#40e0d0;
+                word-break:break-all;
+                text-align:left;
+                cursor:pointer;
+                letter-spacing:.03em;
+                line-height:1.6;
+            " title="Cliquer pour copier">${obsURL}</div>
+            <button class="btn-auth" id="btn-copy">📋 Copier l'URL OBS</button>
+            <button class="btn-auth" style="background:linear-gradient(135deg,#2a0a4a,#1a0a3a);color:#c8d8f0;box-shadow:none;" id="btn-continue">→ Voir le widget maintenant</button>
+            <p style="font-size:10px;color:rgba(200,216,240,.3)">⚠ Le token expire dans ~4h. Refais la procédure si le widget s'arrête.</p>
+        `;
+        document.getElementById('auth-screen').style.display = 'flex';
+
+        document.getElementById('btn-copy').addEventListener('click', () => {
+            navigator.clipboard.writeText(obsURL).then(() => {
+                document.getElementById('btn-copy').textContent = '✓ Copié !';
+                setTimeout(() => document.getElementById('btn-copy').textContent = '📋 Copier l\'URL OBS', 2000);
+            });
+        });
+
+        document.getElementById('obs-url-box').addEventListener('click', () => {
+            navigator.clipboard.writeText(obsURL);
+        });
+
+        document.getElementById('btn-continue').addEventListener('click', () => {
+            window.location.href = obsURL;
+        });
     }
 
     // Bouton de connexion
