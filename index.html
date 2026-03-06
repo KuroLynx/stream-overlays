@@ -29,8 +29,8 @@
             gap: 20px;
             padding: 40px;
             background:
-                    radial-gradient(ellipse at 20% 0%, rgba(42,10,74,.7) 0%, transparent 60%),
-                    linear-gradient(160deg, #07071a 0%, #0d0d28 50%, #070714 100%);
+                radial-gradient(ellipse at 20% 0%, rgba(42,10,74,.7) 0%, transparent 60%),
+                linear-gradient(160deg, #07071a 0%, #0d0d28 50%, #070714 100%);
             border: 1px solid rgba(197,168,255,.25);
             border-radius: 8px;
             box-shadow: 0 0 30px rgba(100,50,200,.3);
@@ -119,15 +119,15 @@
         .progress-wrapper {
             position: relative;
             background:
-                    radial-gradient(ellipse at 20% 0%, rgba(42,10,74,.5) 0%, transparent 60%),
-                    rgba(7, 7, 26, 0.9);
+                radial-gradient(ellipse at 20% 0%, rgba(42,10,74,.5) 0%, transparent 60%),
+                rgba(7, 7, 26, 0.9);
             border: 1px solid rgba(197,168,255,.25);
             border-radius: 30px;
             padding: 7px;
             box-shadow:
-                    0 0 0 1px rgba(245,200,66,.06),
-                    0 0 25px rgba(100,50,200,.3),
-                    inset 0 1px 0 rgba(255,255,255,.05);
+                0 0 0 1px rgba(245,200,66,.06),
+                0 0 25px rgba(100,50,200,.3),
+                inset 0 1px 0 rgba(255,255,255,.05);
             overflow: hidden;
         }
 
@@ -180,20 +180,20 @@
         .progress-bar {
             height: 30px;
             background: linear-gradient(90deg,
-            #1a0a3a 0%,
-            #4a1a8a 20%,
-            #7b2fbe 50%,
-            #40e0d0 80%,
-            #f5c842 100%);
+                #1a0a3a 0%,
+                #4a1a8a 20%,
+                #7b2fbe 50%,
+                #40e0d0 80%,
+                #f5c842 100%);
             background-size: 300% 100%;
             animation: galaxyFlow 5s linear infinite;
             border-radius: 25px;
             position: relative;
             transition: width 1.5s cubic-bezier(.34,1.56,.64,1);
             box-shadow:
-                    0 0 15px rgba(155,89,182,.7),
-                    0 0 28px rgba(64,224,208,.4),
-                    inset 0 2px 5px rgba(255,255,255,.15);
+                0 0 15px rgba(155,89,182,.7),
+                0 0 28px rgba(64,224,208,.4),
+                inset 0 2px 5px rgba(255,255,255,.15);
             min-width: 20px;
         }
         @keyframes galaxyFlow {
@@ -305,63 +305,63 @@
 </head>
 <body>
 
-<!-- ══════════════════════════════════════
-     ÉCRAN D'AUTHENTIFICATION
-══════════════════════════════════════ -->
-<div id="auth-screen">
-    <h2>✦ Connexion Twitch requise ✦</h2>
-    <p>
-        Ce widget utilise l'API Twitch officielle pour lire<br>
-        ton objectif d'abonnements en temps réel.
-    </p>
-    <p class="warning">
-        ⚠ Assure-toi d'avoir ajouté<br>
-        <strong>http://localhost</strong> comme Redirect URI<br>
-        dans ton app sur dev.twitch.tv
-    </p>
-    <button class="btn-auth" id="btn-login">🔮 Se connecter avec Twitch</button>
-    <p style="font-size:10px; color:rgba(200,216,240,.3);">
-        Flux OAuth Implicit Grant · Aucun serveur requis
-    </p>
-</div>
+    <!-- ══════════════════════════════════════
+         ÉCRAN D'AUTHENTIFICATION
+    ══════════════════════════════════════ -->
+    <div id="auth-screen">
+        <h2>✦ Connexion Twitch requise ✦</h2>
+        <p>
+            Ce widget utilise l'API Twitch officielle pour lire<br>
+            ton objectif d'abonnements en temps réel.
+        </p>
+        <p class="warning">
+            ⚠ Assure-toi d'avoir ajouté<br>
+            <strong>http://localhost</strong> comme Redirect URI<br>
+            dans ton app sur dev.twitch.tv
+        </p>
+        <button class="btn-auth" id="btn-login">🔮 Se connecter avec Twitch</button>
+        <p style="font-size:10px; color:rgba(200,216,240,.3);">
+            Flux OAuth Implicit Grant · Aucun serveur requis
+        </p>
+    </div>
 
-<!-- ══════════════════════════════════════
-     WIDGET PRINCIPAL
-══════════════════════════════════════ -->
-<div id="widget">
-    <div id="status"></div>
-    <div id="refresh-dot"></div>
-    <div class="orbit"></div>
-    <div class="title" id="goalTitle">Objectif Subs</div>
+    <!-- ══════════════════════════════════════
+         WIDGET PRINCIPAL
+    ══════════════════════════════════════ -->
+    <div id="widget">
+        <div id="status"></div>
+        <div id="refresh-dot"></div>
+        <div class="orbit"></div>
+        <div class="title" id="goalTitle">Objectif Subs</div>
 
-    <div class="progress-wrapper">
-        <div class="stars" id="stars"></div>
-        <div class="zodiac-icons">
-            <span class="zodiac-icon">♈</span>
-            <span class="zodiac-icon">♉</span>
-            <span class="zodiac-icon">♊</span>
-            <span class="zodiac-icon">♋</span>
-            <span class="zodiac-icon">♌</span>
-            <span class="zodiac-icon">♍</span>
-            <span class="zodiac-icon">♎</span>
-            <span class="zodiac-icon">♏</span>
-            <span class="zodiac-icon">♐</span>
-            <span class="zodiac-icon">♑</span>
-            <span class="zodiac-icon">♒</span>
-            <span class="zodiac-icon">♓</span>
+        <div class="progress-wrapper">
+            <div class="stars" id="stars"></div>
+            <div class="zodiac-icons">
+                <span class="zodiac-icon">♈</span>
+                <span class="zodiac-icon">♉</span>
+                <span class="zodiac-icon">♊</span>
+                <span class="zodiac-icon">♋</span>
+                <span class="zodiac-icon">♌</span>
+                <span class="zodiac-icon">♍</span>
+                <span class="zodiac-icon">♎</span>
+                <span class="zodiac-icon">♏</span>
+                <span class="zodiac-icon">♐</span>
+                <span class="zodiac-icon">♑</span>
+                <span class="zodiac-icon">♒</span>
+                <span class="zodiac-icon">♓</span>
+            </div>
+            <div class="progress-bar" id="progressBar" style="width:0%"></div>
         </div>
-        <div class="progress-bar" id="progressBar" style="width:0%"></div>
+
+        <div class="counter">
+            <span class="num" id="current">0</span>
+            <span style="color:rgba(200,216,240,.4); margin:0 4px">/</span>
+            <span class="num goal-num" id="goal">100</span>
+            <span style="margin-left:6px">subs</span>
+        </div>
     </div>
 
-    <div class="counter">
-        <span class="num" id="current">0</span>
-        <span style="color:rgba(200,216,240,.4); margin:0 4px">/</span>
-        <span class="num goal-num" id="goal">100</span>
-        <span style="margin-left:6px">subs</span>
-    </div>
-</div>
-
-<script>
+    <script>
     // ════════════════════════════════════════════════════════════
     //  CONFIGURATION — à remplir avec tes infos dev.twitch.tv
     // ════════════════════════════════════════════════════════════
@@ -638,6 +638,6 @@
 
     // Démarrer
     init();
-</script>
+    </script>
 </body>
 </html>
